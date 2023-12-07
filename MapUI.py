@@ -2,6 +2,7 @@ import pygame
 import os
 from Button import Button
 from InteractionState import InteractionState
+from MapGenerator import *
 
 class MapUI:
 
@@ -15,9 +16,18 @@ class MapUI:
         self.images = images
         self.boxes = []
 
+        map_generator = MapGenerator()
+
         for y in range(32):
             for x in range(32):
-                self.boxes.append(Button(images["Box_water"], images["Box_water_hovered"], images["Box_water_clicking"], images["Box_water_desactivated"], (x * 29, y * 29), self.click_box))
+                boxType = map_generator.map[x][y]
+                print("x : ", x , "y : ", y, boxType)
+                if boxType == BoxType.Grass:
+                    self.boxes.append(Button(images["Box_grass"], images["Box_grass_hovered"], images["Box_grass_clicking"], images["Box_grass_desactivated"], (x * 29, y * 29), self.click_box))
+                elif boxType == BoxType.Water:
+                    self.boxes.append(Button(images["Box_water"], images["Box_water_hovered"], images["Box_water_clicking"], images["Box_water_desactivated"], (x * 29, y * 29), self.click_box))
+                elif boxType == BoxType.Mountain:
+                    self.boxes.append(Button(images["Box_mountain"], images["Box_mountain_hovered"], images["Box_mountain_clicking"], images["Box_mountain_desactivated"], (x * 29, y * 29), self.click_box))
 
 
     def load_images(self):
