@@ -1,4 +1,4 @@
-
+import pygame
 
 
 class InteractionState:
@@ -25,4 +25,10 @@ class InteractionState:
         
         elif not InteractionState.is_clicking and InteractionState.pressed_click:
             InteractionState.is_clicking = True
+
+    def update_cursor():
+        if InteractionState.nb_hovered > 0:
+            pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+        else:
+            pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
 

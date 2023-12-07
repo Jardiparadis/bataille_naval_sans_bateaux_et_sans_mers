@@ -6,6 +6,20 @@ from InteractionState import InteractionState
 def main():
     
     mapUI = MapUI()
+
+    mapUI.add_soldier_stats(0, None)
+    mapUI.add_soldier_stats(0, None)
+    mapUI.add_soldier_stats(0, None)
+    mapUI.add_soldier_stats(0, None)
+    mapUI.add_soldier_stats(0, None)
+    mapUI.add_soldier_stats(0, None)
+    mapUI.add_soldier_stats(1, None)
+    mapUI.add_soldier_stats(1, None)
+    mapUI.add_soldier_stats(1, None)
+    mapUI.add_soldier_stats(1, None)
+    mapUI.add_soldier_stats(1, None)
+    mapUI.add_soldier_stats(1, None)
+
     running = True
 
     while running:
@@ -27,6 +41,8 @@ def main():
         
         mapUI.check_interaction()
         mapUI.display()
+
+        InteractionState.update_cursor()
 
 
 if __name__ == "__main__":

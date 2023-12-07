@@ -25,7 +25,7 @@ class MapGenerator:
                 self.map[x][y] = BoxType.Water
             elif value < 200: # Green
                 self.map[x][y] = BoxType.Grass
-            elif value < 255: # Mountain
+            elif value < 256: # Mountain
                 self.map[x][y] = BoxType.Mountain
 
         for x in range(shape[0]):
