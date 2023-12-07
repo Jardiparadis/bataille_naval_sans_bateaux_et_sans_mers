@@ -8,7 +8,12 @@ constants = {
         "GAME_START": 201,
         "GAME_UPDATE": 202,
         "GAME_END": 203,
+        "CLIENT_ACKNOWLEDGE": 204,
         "ERROR": 500
+    },
+    "PAYLOAD_STATUS": {
+        "PENDING": 0,
+        "AWAITING_VALIDATION": 1
     }
 }
 
@@ -22,15 +27,24 @@ class Server:
         server_socket.listen(2)
         self.sockets = [server_socket]
         self.payloads_to_send = []
+        self.payloads_id = 0
 
     def __del__(self):
         for client_socket in self.sockets:
             client_socket.close()
 
     def send_data_to_all_clients(self, code, data):
-        payload = json.dumps({code: code, data: data})
         for client_socket in self.sockets:
-            self.payloads_to_send.append((client_socket, bytes(payload, 'utf-8')))
+            # Do not send to the server itself
+            if client_socket == self.sockets[0]:
+                continue
+
+            payload = json.dumps({"id": self.payloads_id, "code": code, "data": data})
+            payload_pending_status = constants["PAYLOAD_STATUS"]["PENDING"]
+            print("Append", payload)
+            self.payloads_to_send.append(
+                [self.payloads_id, client_socket, payload.encode("utf-8"), payload_pending_status])
+            self.payloads_id += 1
 
     def read_data_from_client(self, client_socket):
         try:
@@ -46,8 +60,19 @@ class Server:
         client_socket.close()
         self.sockets.remove(client_socket)
 
+    def acknowledge_payload(self, payload):
+        for i in range(0, len(self.payloads_to_send)):
+            if self.payloads_to_send[i][0] == payload["id"]:
+                del self.payloads_to_send[i]
+                return
+
     def handle_client_message(self, client_socket, buffer):
-        pass
+        try:
+            data = json.loads(buffer.decode("utf-8"))
+            if data["code"] == constants["GAME_CODES"]["CLIENT_ACKNOWLEDGE"]:
+                self.acknowledge_payload(data)
+        except ValueError:
+            print("Invalid data received")
 
     def start(self):
         while True:
@@ -56,6 +81,7 @@ class Server:
             except select.error:
                 break
 
+            # Read available data
             for socket_read_ready in sockets_read_ready:
                 # if socket is the server socket
                 if socket_read_ready == self.sockets[0]:
@@ -74,15 +100,13 @@ class Server:
                 # Handle message
                 self.handle_client_message(socket_read_ready, client_data)
 
+            # Write payload on ready sockets
             for socket_write_ready in sockets_write_ready:
                 for payload_to_send in self.payloads_to_send:
-                    if socket_write_ready == payload_to_send[0]:
-                        socket_write_ready.sendall(payload_to_send[1])
-                        self.payloads_to_send.remove(payload_to_send)
+                    if socket_write_ready == payload_to_send[1] and payload_to_send[3] == constants["PAYLOAD_STATUS"]["PENDING"]:
+                        socket_write_ready.sendall(payload_to_send[2])
+                        payload_to_send[3] = constants["PAYLOAD_STATUS"]["AWAITING_VALIDATION"]
 
-
-# Error { code: 500, data: "" }
-# Game { code: 200, data:"" }
 
 server = Server()
 server.start()
