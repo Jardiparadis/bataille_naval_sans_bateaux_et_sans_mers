@@ -5,6 +5,7 @@ from InteractionState import InteractionState
 from MapGenerator import *
 from Utils import Utils
 from SoldierStatsUI import SoldierStatsUI
+from PIL import Image
 
 class MapUI:
 
@@ -13,11 +14,17 @@ class MapUI:
         pygame.init()
         self.shape = (32,32)
         self.box_pixel_size = 29
-        self.screen = pygame.display.set_mode((self.box_pixel_size * self.shape[0] + 300, self.box_pixel_size * self.shape[1]))
-        pygame.display.set_caption('A L\'ATTAQUE')
+
+        screen_size = (self.box_pixel_size * self.shape[0] + 300, self.box_pixel_size * self.shape[1])
+        self.screen = pygame.display.set_mode(screen_size)
+
+        
+        pygame.display.set_caption('Frontline Conquest')
 
         base_path = os.path.dirname(os.path.abspath(__file__))
         Utils.asset_path = os.path.join(base_path, "assets")
+
+        self.create_back_img(screen_size)
 
         images = self.load_images()
         self.images = images
@@ -31,6 +38,8 @@ class MapUI:
         self.color_player = pygame.Color("#ffffff")
         self.player_side_rect_1 = pygame.Rect(0, self.box_pixel_size * 2 - 1, self.shape[0] * self.box_pixel_size, 2)
         self.player_side_rect_2 = pygame.Rect(0, (self.shape[1] - 2) * self.box_pixel_size - 1, self.shape[0] * self.box_pixel_size, 2)
+
+        self.back_img = images["back_end_game"]
 
         map_generator = MapGenerator(self.shape)
 
@@ -72,6 +81,19 @@ class MapUI:
 
         return images
     
+    def create_back_img(self, screen_size):
+        base_path = os.path.dirname(os.path.abspath(__file__))
+        asset_path = os.path.join(base_path, "assets")
+        images_path = os.path.join(asset_path, "images")
+
+
+        image_temp = Image.new(mode="RGBA", size=screen_size)
+
+        for x in range(screen_size[0]):
+            for y in range(screen_size[1]):
+                image_temp.putpixel((x, y), (0, 0, 0, 100))
+
+        image_temp.save( os.path.join(images_path, "back_end_game.png"))
 
     def display(self):
 
@@ -91,6 +113,7 @@ class MapUI:
         pygame.draw.rect(self.screen, self.color_player, self.player_side_rect_2)
 
         self.screen.blit(self.title_game, (967 , 451))
+        self.screen.blit(self.back_img, (0 , 0))
 
         pygame.display.flip()
 

@@ -28,8 +28,8 @@ class MapGenerator:
             elif value < 256: # Mountain
                 self.map[x][y] = BoxType.Mountain
 
-        for x in range(shape[0]):
-            for y in range(shape[1]):
+        for x in range(shape[1]):
+            for y in range(shape[0]):
                 value = noise_generator.noise2(x/scale, y/scale)
 
                 # Contrast
