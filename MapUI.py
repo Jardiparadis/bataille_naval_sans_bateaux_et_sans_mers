@@ -9,26 +9,36 @@ class MapUI:
 
     def __init__(self):
         pygame.init()
-        self.screen = pygame.display.set_mode((928, 928))
+        self.shape = (32,32)
+        self.box_pixel_size = 29
+        self.screen = pygame.display.set_mode((self.box_pixel_size * self.shape[0], self.box_pixel_size * self.shape[1]))
         pygame.display.set_caption('A L\'ATTAQUE')
 
         images = self.load_images()
         self.images = images
         self.boxes = []
 
-        map_generator = MapGenerator()
+        self.color_player = pygame.Color("#ffffff")
+        self.player_side_rect_1 = pygame.Rect(0, self.box_pixel_size * 2 - 1, self.shape[0] * self.box_pixel_size, 2)
+        self.player_side_rect_2 = pygame.Rect(0, (self.shape[1] - 2) * self.box_pixel_size - 1, self.shape[0] * self.box_pixel_size, 2)
 
-        for y in range(32):
-            for x in range(32):
+        map_generator = MapGenerator(self.shape)
+
+        for y in range(self.shape[0]):
+            for x in range(self.shape[1]):
                 boxType = map_generator.map[x][y]
-                print("x : ", x , "y : ", y, boxType)
-                if boxType == BoxType.Grass:
-                    self.boxes.append(Button(images["Box_grass"], images["Box_grass_hovered"], images["Box_grass_clicking"], images["Box_grass_desactivated"], (x * 29, y * 29), self.click_box))
-                elif boxType == BoxType.Water:
-                    self.boxes.append(Button(images["Box_water"], images["Box_water_hovered"], images["Box_water_clicking"], images["Box_water_desactivated"], (x * 29, y * 29), self.click_box))
-                elif boxType == BoxType.Mountain:
-                    self.boxes.append(Button(images["Box_mountain"], images["Box_mountain_hovered"], images["Box_mountain_clicking"], images["Box_mountain_desactivated"], (x * 29, y * 29), self.click_box))
+                pos = (x * self.box_pixel_size, y * self.box_pixel_size)
+                fn = lambda: self.click_box(x, y)
 
+                if boxType == BoxType.Grass:
+                    boxe = Button(images["Box_grass"], images["Box_grass_hovered"], images["Box_grass_clicking"], images["Box_grass_desactivated"], pos, lambda: self.click_box(x = x, y = y))
+                elif boxType == BoxType.Water:
+                    boxe = Button(images["Box_water"], images["Box_water_hovered"], images["Box_water_clicking"], images["Box_water"], pos, lambda: self.click_box(x = x, y = y))
+                    boxe.is_activated = False
+                elif boxType == BoxType.Mountain:
+                    boxe = Button(images["Box_mountain"], images["Box_mountain_hovered"], images["Box_mountain_clicking"], images["Box_mountain_desactivated"], pos, lambda: self.click_box(x = x, y = y))
+
+                self.boxes.append(boxe)
 
     def load_images(self):
         base_path = os.path.dirname(os.path.abspath(__file__))
@@ -53,8 +63,14 @@ class MapUI:
     
 
     def display(self):
+
+        
+
         for box in self.boxes:
             box.display(self.screen)
+
+        pygame.draw.rect(self.screen, self.color_player, self.player_side_rect_1)
+        pygame.draw.rect(self.screen, self.color_player, self.player_side_rect_2)
 
         pygame.display.flip()
 
@@ -62,5 +78,7 @@ class MapUI:
         for box in self.boxes:
             box.check_interaction()
 
-    def click_box(idk):
-        print("Click box")
+    def click_box(self, x, y):
+        # x = x_pos / self.box_pixel_size
+        # y = y_pos / self.box_pixel_size
+        print("Click box : x : ", x, ", y : " , y)

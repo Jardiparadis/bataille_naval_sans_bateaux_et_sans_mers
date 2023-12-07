@@ -10,9 +10,8 @@ class BoxType(Enum):
 
 class MapGenerator:
 
-    def __init__(self):
+    def __init__(self, shape):
 
-        shape = (32, 32)
         scale = 9.1
 
         seed = random.randint(0,1000)  # You can change this seed to any integer value

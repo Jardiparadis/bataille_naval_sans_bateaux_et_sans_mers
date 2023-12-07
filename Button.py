@@ -35,6 +35,9 @@ class Button:
 
     def check_interaction(self):
 
+        if not self.is_activated:
+            return
+
         is_hovered = self.img_rect.collidepoint(InteractionState.mouse_pos)
 
         if self.is_hovered != is_hovered:
