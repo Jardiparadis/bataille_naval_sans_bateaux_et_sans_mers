@@ -1,10 +1,10 @@
 import pygame
 from MapUI import MapUI
 from InteractionState import InteractionState
-
+from Network import NetworkManager
 
 def main():
-    
+    network = NetworkManager()
     mapUI = MapUI()
 
     mapUI.add_soldier_stats(0, None)
