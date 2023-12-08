@@ -37,7 +37,6 @@ def restart():
     import os
     os.execv(sys.executable, ['python'] + sys.argv)
 
-
 def main():
     #network = NetworkManager()
     mapUI = MapUI()
