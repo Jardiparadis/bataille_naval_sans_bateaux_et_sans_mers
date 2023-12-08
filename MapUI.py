@@ -69,7 +69,7 @@ class MapUI:
 
         self.is_game_ended = False
 
-        self.start_back_sound()
+        self.sounds = self.load_sounds()
 
         map_generator = MapGenerator(self.shape)
 
@@ -112,15 +112,31 @@ class MapUI:
 
         return images
     
-    def start_back_sound(self):
+    def load_sounds(self):
         base_path = os.path.dirname(os.path.abspath(__file__))
         asset_path = os.path.join(base_path, "assets")
-        sound_path = os.path.join(asset_path, "sounds")
+        sounds_path = os.path.join(asset_path, "sounds")
 
-        mixer.init() 
-        mixer.music.load(os.path.join(sound_path, "back_sound.mp3")) 
-        mixer.music.set_volume(0.7) 
-        mixer.music.play(-1) 
+        sounds_to_load = [f for f in os.listdir(sounds_path) if os.path.isfile(os.path.join(sounds_path, f))]
+
+        sounds = {}
+
+        for sound_to_load in sounds_to_load:
+            name, extension = os.path.splitext(sound_to_load)
+
+            if not ".mp3" in extension and not ".wav" in extension:
+                continue
+
+            sound = pygame.mixer.Sound(os.path.join(sounds_path,sound_to_load))
+            sounds[name] = sound
+
+
+        sounds["back_sound"].play(-1)
+        sounds["back_sound"].set_volume(.1)
+
+        Button.click_sound = sounds["click"]
+
+        return sounds
   
 
     def create_back_img(self, screen_size):
@@ -138,10 +154,24 @@ class MapUI:
         image_temp.save( os.path.join(images_path, "back_end_game.png"))
 
 
+
+    def play_end_sound(self):
+
+        self.sounds["back_sound"].set_volume(0.1)
+
+        if InteractionState.has_won:
+            self.sounds["success"].play()
+        else:
+            self.sounds["loose"].play()
+
     def display_map_page(self):
 
         if not self.is_game_ended and InteractionState.is_ended:
             self.is_game_ended = True
+            self.play_end_sound()
+            
+
+
 
         self.screen.fill(self.black_color)
 
