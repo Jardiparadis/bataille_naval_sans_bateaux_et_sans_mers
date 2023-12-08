@@ -59,6 +59,7 @@ def main():
     is_game_started = True
 
     soldiers_to_display = [[], []]
+    selected_soldier = None
 
     while running:
 
@@ -95,6 +96,12 @@ def main():
             InteractionState.update_is_clicking()
             InteractionState.mouse_pos = pygame.mouse.get_pos()
             mapUI.check_interaction()
+
+            if InteractionState.released_click == True:
+                x_mouse, y_mouse = InteractionState.mouse_pos
+                x_cell = round((x_mouse / 29) - 0.5) # 29px is cell width/height
+                y_cell = round((y_mouse / 29) - 0.5)
+                selected_soldier = (x_cell, y_cell)
 
         mapUI.display(soldiers_to_display)
         InteractionState.update_cursor()

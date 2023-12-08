@@ -115,12 +115,12 @@ class Server:
                     continue
 
                 client_data = self.read_data_from_client(socket_read_ready)
-                print("Received", client_data.decode("utf-8"))
                 if client_data is None:
                     # Then client is disconnected
                     self.disconnect_client(socket_read_ready)
                     continue
                 # Handle message
+                print("Received", client_data.decode("utf-8"))
                 self.handle_client_message(socket_read_ready, client_data)
 
             # Write payload on ready sockets
