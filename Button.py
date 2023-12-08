@@ -5,6 +5,8 @@ from InteractionState import InteractionState
 class Button:
 
 
+    click_sound = None
+
     def __init__(self, img, img_hovered, img_clicking, img_disabled, position, fn_click):
 
         self.img = img
@@ -53,6 +55,7 @@ class Button:
         if self.is_clicking and InteractionState.released_click:
             self.fn_click()
             self.is_clicking = False
+            Button.click_sound.play()
 
         
 
