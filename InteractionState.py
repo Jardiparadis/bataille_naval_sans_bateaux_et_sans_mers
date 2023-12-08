@@ -7,6 +7,9 @@ class InteractionState:
     is_clicking = False
     released_click = False
     pressed_click = False
+    want_restart = False
+    is_ended = False
+    has_won = True
 
     nb_hovered = 0
 

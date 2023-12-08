@@ -6,6 +6,7 @@ from MapGenerator import *
 from Utils import Utils
 from SoldierStatsUI import SoldierStatsUI
 from PIL import Image
+import sys
 
 class MapUI:
 
@@ -39,7 +40,24 @@ class MapUI:
         self.player_side_rect_1 = pygame.Rect(0, self.box_pixel_size * 2 - 1, self.shape[0] * self.box_pixel_size, 2)
         self.player_side_rect_2 = pygame.Rect(0, (self.shape[1] - 2) * self.box_pixel_size - 1, self.shape[0] * self.box_pixel_size, 2)
 
+
+        self.loose_img = images["LooseSoldier"]
+        self.win_img = images["WinSoldier"]
+        self.back_end_img = images["Back_End_Dialog"]
+        self.restart_btn = Button(self.images["RestartBtn"], self.images["RestartBtn_Hovered"], self.images["RestartBtn_Clicking"], self.images["RestartBtn"], (367,570), self.restart_click)
+        self.quit_btn = Button(self.images["QuitBtn"], self.images["QuitBtn_Hovered"], self.images["QuitBtn_Clicking"], self.images["QuitBtn"], (628, 570), self.quit_click)
+
+        self.restart_text = Utils.getTextWithColor("Restart", 25, pygame.Color("white"))
+        self.quit_text = Utils.getTextWithColor("Quit", 25, pygame.Color("white"))
+
+        temp_end_soldier_rect = self.win_img.get_rect()
+        self.end_soldier_rect = pygame.Rect(560, 385, temp_end_soldier_rect.width, temp_end_soldier_rect.height)
+
+        self.end_game_text = Utils.getTextWithColor("You Won !", 32, pygame.Color("white"))
+
         self.back_img = images["back_end_game"]
+
+        self.is_game_ended = False
 
         map_generator = MapGenerator(self.shape)
 
@@ -59,6 +77,7 @@ class MapUI:
                     boxe = Button(images["Box_mountain"], images["Box_mountain_hovered"], images["Box_mountain_clicking"], images["Box_mountain_desactivated"], pos, fn)
 
                 self.boxes.append(boxe)
+
 
     def load_images(self):
         base_path = os.path.dirname(os.path.abspath(__file__))
@@ -95,7 +114,11 @@ class MapUI:
 
         image_temp.save( os.path.join(images_path, "back_end_game.png"))
 
-    def display(self):
+
+    def display_map_page(self):
+
+        if not self.is_game_ended and InteractionState.is_ended:
+            self.is_game_ended = True
 
         self.screen.fill(self.black_color)
 
@@ -113,11 +136,34 @@ class MapUI:
         pygame.draw.rect(self.screen, self.color_player, self.player_side_rect_2)
 
         self.screen.blit(self.title_game, (967 , 451))
+
+
+    def display_end_page(self):
         self.screen.blit(self.back_img, (0 , 0))
+
+        self.screen.blit(self.back_end_img, (338, 296))
+
+        self.screen.blit(self.win_img, self.end_soldier_rect)
+        self.screen.blit(self.end_game_text, (560,331))
+
+        self.restart_btn.display(self.screen)
+        self.quit_btn.display(self.screen)
+
+        self.screen.blit(self.restart_text, (443,583))
+        self.screen.blit(self.quit_text, (720, 583))
+
+
+    def display(self):
+
+        self.display_map_page()
+
+        if self.is_game_ended:
+            self.display_end_page()
 
         pygame.display.flip()
 
-    def check_interaction(self):
+    
+    def check_interaction_map_page(self):
         for box in self.boxes:
             box.check_interaction()
 
@@ -126,6 +172,21 @@ class MapUI:
 
         for soldier_stats_ui in self.soldier_stats_2:
             soldier_stats_ui.check_interaction()
+
+
+    def check_interaction_end_page(self):
+        self.restart_btn.check_interaction()
+        self.quit_btn.check_interaction()
+    
+    def check_interaction(self):
+
+        if self.is_game_ended:
+            self.check_interaction_end_page()
+        else:
+            self.check_interaction_map_page()
+
+
+        
 
     def click_box(self, x, y):
         print("Click box : x : ", x, ", y : " , y)
@@ -155,4 +216,10 @@ class MapUI:
             self.soldier_stats_1.append(soldier_stats_ui)
         else:
             self.soldier_stats_2.append(soldier_stats_ui)
+
+    def restart_click(self):
+        InteractionState.want_restart = True
+
+    def quit_click(self):
+        sys.exit()
 

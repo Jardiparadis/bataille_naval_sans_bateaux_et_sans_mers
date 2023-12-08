@@ -3,8 +3,18 @@ from MapUI import MapUI
 from InteractionState import InteractionState
 from Network import NetworkManager
 
+def restart():
+    import sys
+    print("argv was",sys.argv)
+    print("sys.executable was", sys.executable)
+    print("restart now")
+
+    import os
+    os.execv(sys.executable, ['python'] + sys.argv)
+
+
 def main():
-    network = NetworkManager()
+    #network = NetworkManager()
     mapUI = MapUI()
 
     mapUI.add_soldier_stats(0, None)
@@ -34,6 +44,10 @@ def main():
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 InteractionState.pressed_click = True
+            
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_e:
+                    InteractionState.is_ended = True
 
         
         InteractionState.update_is_clicking()
@@ -43,6 +57,9 @@ def main():
         mapUI.display()
 
         InteractionState.update_cursor()
+
+        if InteractionState.want_restart:
+            restart()
 
 
 if __name__ == "__main__":
