@@ -44,6 +44,12 @@ class MapUI:
         self.player_side_rect_2 = pygame.Rect(0, (self.shape[1] - 2) * self.box_pixel_size - 1, self.shape[0] * self.box_pixel_size, 2)
 
 
+        self.server_btn = Button(self.images["Menu_Btn"], self.images["Menu_Btn_Hovered"], self.images["Menu_Btn_Clicking"], self.images["Menu_Btn"], (360,565), self.server_click)
+        self.server_text = Utils.getTextWithColor("Server", 26, pygame.Color("white"))
+        self.client_btn = Button(self.images["Menu_Btn"], self.images["Menu_Btn_Hovered"], self.images["Menu_Btn_Clicking"], self.images["Menu_Btn"], (643,565), self.client_click)
+        self.client_text = Utils.getTextWithColor("Client", 26, pygame.Color("white"))
+
+
         self.loose_img = images["LooseSoldier"]
         self.win_img = images["WinSoldier"]
         self.back_end_img = images["Back_End_Dialog"]
@@ -66,6 +72,8 @@ class MapUI:
         self.end_game_text = Utils.getTextWithColor("You Won !", 32, pygame.Color("white"))
 
         self.back_img = images["back_end_game"]
+
+        self.menu_img = images["Menu"]
 
         self.is_game_ended = False
 
@@ -164,6 +172,15 @@ class MapUI:
         else:
             self.sounds["loose"].play()
 
+
+    def display_menu_page(self):
+        self.screen.blit(self.menu_img, (0 , 0))
+        self.server_btn.display(self.screen)
+        self.client_btn.display(self.screen)
+
+        self.screen.blit(self.server_text, (435,578))
+        self.screen.blit(self.client_text, (723,578))
+
     def display_map_page(self):
 
         if not self.is_game_ended and InteractionState.is_ended:
@@ -214,6 +231,11 @@ class MapUI:
 
     def display(self):
 
+        if InteractionState.in_menu:
+            self.display_menu_page()
+            pygame.display.flip()
+            return
+
         self.display_map_page()
 
         if self.is_game_ended:
@@ -222,6 +244,10 @@ class MapUI:
         pygame.display.flip()
 
     
+    def check_interaction_menu_page(self):
+        self.server_btn.check_interaction()
+        self.client_btn.check_interaction()
+
     def check_interaction_map_page(self):
         for box in self.boxes:
             box.check_interaction()
@@ -240,6 +266,10 @@ class MapUI:
         self.quit_btn.check_interaction()
     
     def check_interaction(self):
+
+        if InteractionState.in_menu:
+            self.check_interaction_menu_page()
+            return
 
         if self.is_game_ended:
             self.check_interaction_end_page()
@@ -290,3 +320,10 @@ class MapUI:
 
         self.next_turn_btn.is_activated = False
 
+    def server_click(self):
+        print("server_click")
+        InteractionState.in_menu = False
+
+    def client_click(self):
+        print("client_click")
+        InteractionState.in_menu = False

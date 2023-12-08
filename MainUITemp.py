@@ -49,6 +49,10 @@ def main():
                 if event.key == pygame.K_e:
                     InteractionState.is_ended = True
 
+                if event.key == pygame.K_z:
+                    InteractionState.in_menu = False
+                
+
         
         InteractionState.update_is_clicking()
         InteractionState.mouse_pos = pygame.mouse.get_pos()
