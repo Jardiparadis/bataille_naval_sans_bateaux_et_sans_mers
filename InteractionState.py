@@ -10,6 +10,7 @@ class InteractionState:
     want_restart = False
     is_ended = False
     has_won = True
+    in_menu = True
 
     nb_hovered = 0
 
