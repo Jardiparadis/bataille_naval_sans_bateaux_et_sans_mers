@@ -33,6 +33,8 @@ class MapUI:
         self.soldier_stats_1 = []
         self.soldier_stats_2 = []
 
+        self.nb_turns = 1
+
         self.title_game = Utils.getTextWithColor("Frontline Conquest", 25, pygame.Color("white"))
 
         self.black_color = pygame.Color("#1C1C1C")
@@ -45,10 +47,17 @@ class MapUI:
         self.win_img = images["WinSoldier"]
         self.back_end_img = images["Back_End_Dialog"]
         self.restart_btn = Button(self.images["RestartBtn"], self.images["RestartBtn_Hovered"], self.images["RestartBtn_Clicking"], self.images["RestartBtn"], (367,570), self.restart_click)
-        self.quit_btn = Button(self.images["QuitBtn"], self.images["QuitBtn_Hovered"], self.images["QuitBtn_Clicking"], self.images["QuitBtn"], (628, 570), self.quit_click)
-
         self.restart_text = Utils.getTextWithColor("Restart", 25, pygame.Color("white"))
+
+        self.quit_btn = Button(self.images["QuitBtn"], self.images["QuitBtn_Hovered"], self.images["QuitBtn_Clicking"], self.images["QuitBtn"], (628, 570), self.quit_click)
         self.quit_text = Utils.getTextWithColor("Quit", 25, pygame.Color("white"))
+
+        self.next_turn_btn = Button(self.images["EndTurnBtn"], self.images["EndTurnBtn_Hovered"], self.images["EndTurnBtn_Clicking"], self.images["EndTurnBtn_Desactivated"], (995,871), self.end_turn_click)
+        self.next_turn_text = Utils.getTextWithColor("End Turn", 20, pygame.Color("white"))
+
+        self.turns_img = images["Turns"]
+        self.turns_text = Utils.getTextWithColor("Turns", 20, pygame.Color("white"))
+        self.turns_counter_text = Utils.getTextWithColor(str(self.nb_turns), 20, pygame.Color("white"))
 
         temp_end_soldier_rect = self.win_img.get_rect()
         self.end_soldier_rect = pygame.Rect(560, 385, temp_end_soldier_rect.width, temp_end_soldier_rect.height)
@@ -135,6 +144,12 @@ class MapUI:
         pygame.draw.rect(self.screen, self.color_player, self.player_side_rect_1)
         pygame.draw.rect(self.screen, self.color_player, self.player_side_rect_2)
 
+        self.screen.blit(self.turns_img, (998,12))
+        self.screen.blit(self.turns_text, (1040,18))
+        self.screen.blit(self.turns_counter_text, (1144,18))
+
+        self.next_turn_btn.display(self.screen)
+        self.screen.blit(self.next_turn_text, (1023, 875))
         self.screen.blit(self.title_game, (967 , 451))
 
 
@@ -173,6 +188,8 @@ class MapUI:
         for soldier_stats_ui in self.soldier_stats_2:
             soldier_stats_ui.check_interaction()
 
+        self.next_turn_btn.check_interaction()
+
 
     def check_interaction_end_page(self):
         self.restart_btn.check_interaction()
@@ -196,7 +213,7 @@ class MapUI:
 
         is_player_one = (player_id == 0)
 
-        start_pos_soldier_stat = (956, 68) if is_player_one else (956, 538)
+        start_pos_soldier_stat = (956, 78) if is_player_one else (956, 528)
 
         nb_soldier_stat = len(self.soldier_stats_1) if is_player_one else len(self.soldier_stats_2)
 
@@ -222,4 +239,10 @@ class MapUI:
 
     def quit_click(self):
         sys.exit()
+
+    def end_turn_click(self):
+        self.nb_turns += 1
+        self.turns_counter_text = Utils.getTextWithColor(str(self.nb_turns), 20, pygame.Color("white"))
+
+        self.next_turn_btn.is_activated = False
 
