@@ -36,7 +36,7 @@ class Network:
 
             # Read available data
             for socket_read_ready in sockets_read_ready:
-                buffer = socket_read_ready.recv(256)
+                buffer = socket_read_ready.recv(1024)
                 self.send_data(buffer)
 
             # Write payload on ready sockets

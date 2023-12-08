@@ -1,6 +1,6 @@
 class Soldier:
 
-    def __init__(self, img, name="", attack=1, defence=1, x=0, y=0):
+    def __init__(self, img="", name="", attack=1, defence=1, x=0, y=0):
         self.name = name
         self.attack = attack
         self.defence = defence

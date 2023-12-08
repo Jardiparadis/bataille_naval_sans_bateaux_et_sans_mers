@@ -18,8 +18,8 @@ constants = {
 def convert_payload_to_dict(payload: bytes):
     try:
         return json.loads(payload.decode("utf-8"))
-    except ValueError:
-        print("Invalid payload")
+    except ValueError as e:
+        print("Invalid payload", e)
         return None
 
 def handle_start_game(data: dict, network: NetworkManager, game: Game) -> int:
@@ -58,19 +58,23 @@ def main():
     running = True
     is_game_started = True
 
-    soldiers_player_1 = []
-    soldiers_player_2 = []
+    soldiers_to_display = [[], []]
 
     while running:
 
         payload = network.fetch_message()
         if payload is not None:
+            print("Received", payload)
             data = convert_payload_to_dict(payload)
             if data is not None:
                 if data["code"] == constants["GAME_CODES"]["GAME_START"]:
                     seed = handle_start_game(data, network, game)
                     is_game_started = True
                     mapUI.generate_map(seed)
+
+                if data["code"] == constants["GAME_CODES"]["GAME_UPDATE"]:
+                    soldiers_to_display = data["data"]
+
 
         InteractionState.reset_begin_frame()
 
@@ -92,7 +96,7 @@ def main():
             InteractionState.mouse_pos = pygame.mouse.get_pos()
             mapUI.check_interaction()
 
-        mapUI.display()
+        mapUI.display(soldiers_to_display)
         InteractionState.update_cursor()
 
         if InteractionState.want_restart:

@@ -45,6 +45,7 @@ class Server:
 
             payload = json.dumps({"id": self.payloads_id, "code": code, "data": data})
             payload_pending_status = constants["PAYLOAD_STATUS"]["PENDING"]
+            payload = payload.ljust(1024)
             print("Append", payload)
             self.payloads_to_send.append(
                 [self.payloads_id, client_socket, payload.encode("utf-8"), payload_pending_status])
@@ -52,7 +53,7 @@ class Server:
 
     def read_data_from_client(self, client_socket):
         try:
-            buffer = client_socket.recv(256)
+            buffer = client_socket.recv(1024)
             if len(buffer) == 0:
                 return None
             return buffer
@@ -90,7 +91,7 @@ class Server:
             first_player_soldiers_pos.append((soldier.x, soldier.y))
         for soldier in self.game.players[1].soldier_list:
             second_player_soldiers_pos.append((soldier.x, soldier.y))
-        self.send_data_to_all_clients(constants["GAME_CODES"]["GAME_UPDATE"], [])
+        self.send_data_to_all_clients(constants["GAME_CODES"]["GAME_UPDATE"], [first_player_soldiers_pos, second_player_soldiers_pos])
 
     def start(self):
         while True:
@@ -110,6 +111,7 @@ class Server:
                     # Count server socket (2 player sockets + 1 server socket)
                     if len(self.sockets) == 3:
                         self.send_data_to_all_clients(constants["GAME_CODES"]["GAME_START"], self.game.seed)
+                        self.begin_game()
                     continue
 
                 client_data = self.read_data_from_client(socket_read_ready)
