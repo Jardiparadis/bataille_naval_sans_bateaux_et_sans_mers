@@ -83,6 +83,14 @@ class Server:
         self.game.add_player()
         # player 2
         self.game.add_player()
+        self.game.place_soldiers_to_initial_pos()
+        first_player_soldiers_pos = []
+        second_player_soldiers_pos = []
+        for soldier in self.game.players[0].soldier_list:
+            first_player_soldiers_pos.append((soldier.x, soldier.y))
+        for soldier in self.game.players[1].soldier_list:
+            second_player_soldiers_pos.append((soldier.x, soldier.y))
+        self.send_data_to_all_clients(constants["GAME_CODES"]["GAME_UPDATE"], [])
 
     def start(self):
         while True:
@@ -101,7 +109,7 @@ class Server:
                     print("New client connected", addr)
                     # Count server socket (2 player sockets + 1 server socket)
                     if len(self.sockets) == 3:
-                        self.send_data_to_all_clients(constants["GAME_CODES"]["GAME_START"], "start")
+                        self.send_data_to_all_clients(constants["GAME_CODES"]["GAME_START"], self.game.seed)
                     continue
 
                 client_data = self.read_data_from_client(socket_read_ready)

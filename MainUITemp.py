@@ -22,11 +22,11 @@ def convert_payload_to_dict(payload: bytes):
         print("Invalid payload")
         return None
 
-def handle_start_game(data: dict, network: NetworkManager, game: Game):
+def handle_start_game(data: dict, network: NetworkManager, game: Game) -> int:
     response = { "id" : data["id"], "code": constants["GAME_CODES"]["CLIENT_ACKNOWLEDGE"], "data": "" }
     response_as_string = json.dumps(response)
     network.send_message(response_as_string.encode())
-    game.place_soldiers_to_initial_pos()
+    return data["data"]
 
 def restart():
     import sys
@@ -38,7 +38,7 @@ def restart():
     os.execv(sys.executable, ['python'] + sys.argv)
 
 def main():
-    #network = NetworkManager()
+    network = NetworkManager()
     mapUI = MapUI()
     game = Game()
 
@@ -58,6 +58,9 @@ def main():
     running = True
     is_game_started = True
 
+    soldiers_player_1 = []
+    soldiers_player_2 = []
+
     while running:
 
         payload = network.fetch_message()
@@ -65,8 +68,9 @@ def main():
             data = convert_payload_to_dict(payload)
             if data is not None:
                 if data["code"] == constants["GAME_CODES"]["GAME_START"]:
-                    handle_start_game(data, network, game)
+                    seed = handle_start_game(data, network, game)
                     is_game_started = True
+                    mapUI.generate_map(seed)
 
         InteractionState.reset_begin_frame()
 
@@ -87,7 +91,7 @@ def main():
             InteractionState.update_is_clicking()
             InteractionState.mouse_pos = pygame.mouse.get_pos()
             mapUI.check_interaction()
-        
+
         mapUI.display()
         InteractionState.update_cursor()
 

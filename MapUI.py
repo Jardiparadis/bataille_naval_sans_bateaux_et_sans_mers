@@ -7,13 +7,15 @@ from Utils import Utils
 from SoldierStatsUI import SoldierStatsUI
 from PIL import Image
 import sys
-from pygame import mixer 
+from pygame import mixer
+from Soldier import Soldier
 
 class MapUI:
 
 
     def __init__(self):
         pygame.init()
+        pygame.mixer.init()
         self.shape = (32,32)
         self.box_pixel_size = 29
 
@@ -71,7 +73,10 @@ class MapUI:
 
         self.sounds = self.load_sounds()
 
-        map_generator = MapGenerator(self.shape)
+        self.generate_map()
+
+    def generate_map(self, seed=None):
+        map_generator = MapGenerator(self.shape, seed)
 
         for y in range(self.shape[0]):
             for x in range(self.shape[1]):
@@ -81,15 +86,14 @@ class MapUI:
                 fn = lambda x=x, y=y: self.click_box(x, y)
 
                 if boxType == BoxType.Grass:
-                    boxe = Button(images["Box_grass"], images["Box_grass_hovered"], images["Box_grass_clicking"], images["Box_grass_desactivated"], pos, fn)
+                    boxe = Button(self.images["Box_grass"], self.images["Box_grass_hovered"], self.images["Box_grass_clicking"], self.images["Box_grass_desactivated"], pos, fn)
                 elif boxType == BoxType.Water:
-                    boxe = Button(images["Box_water"], images["Box_water_hovered"], images["Box_water_clicking"], images["Box_water"], pos, fn)
+                    boxe = Button(self.images["Box_water"], self.images["Box_water_hovered"], self.images["Box_water_clicking"], self.images["Box_water"], pos, fn)
                     boxe.is_activated = False
                 elif boxType == BoxType.Mountain:
-                    boxe = Button(images["Box_mountain"], images["Box_mountain_hovered"], images["Box_mountain_clicking"], images["Box_mountain_desactivated"], pos, fn)
+                    boxe = Button(self.images["Box_mountain"], self.images["Box_mountain_hovered"], self.images["Box_mountain_clicking"], self.images["Box_mountain_desactivated"], pos, fn)
 
                 self.boxes.append(boxe)
-
 
     def load_images(self):
         base_path = os.path.dirname(os.path.abspath(__file__))
@@ -215,6 +219,10 @@ class MapUI:
     def display(self):
 
         self.display_map_page()
+
+        img = pygame.image.load("C:\\Users\\moisan_l\\Documents\\Python\\bataille_naval_sans_bateaux_et_sans_mers\\assets\\images\\Soldier1.png")
+        soldier = Soldier(img)
+        soldier.display(self.screen)
 
         if self.is_game_ended:
             self.display_end_page()

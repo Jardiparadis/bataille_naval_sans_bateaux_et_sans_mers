@@ -12,6 +12,7 @@ class Game:
         self.players: list[Player] = []
         self.seed = random.randint(0,1000)
         self.mapGenerator = MapGenerator(MAP_SHAPE, self.seed)
+        #self.images = images
 
     def add_player(self):
         if len(self.players) > 2:
