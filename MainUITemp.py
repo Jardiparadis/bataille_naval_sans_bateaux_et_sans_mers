@@ -56,7 +56,7 @@ def main():
     mapUI.add_soldier_stats(1, None)
 
     running = True
-    is_game_started = False
+    is_game_started = True
 
     while running:
 
