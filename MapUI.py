@@ -7,6 +7,7 @@ from Utils import Utils
 from SoldierStatsUI import SoldierStatsUI
 from PIL import Image
 import sys
+from pygame import mixer 
 
 class MapUI:
 
@@ -68,6 +69,8 @@ class MapUI:
 
         self.is_game_ended = False
 
+        self.start_back_sound()
+
         map_generator = MapGenerator(self.shape)
 
         for y in range(self.shape[0]):
@@ -109,6 +112,17 @@ class MapUI:
 
         return images
     
+    def start_back_sound(self):
+        base_path = os.path.dirname(os.path.abspath(__file__))
+        asset_path = os.path.join(base_path, "assets")
+        sound_path = os.path.join(asset_path, "sounds")
+
+        mixer.init() 
+        mixer.music.load(os.path.join(sound_path, "back_sound.mp3")) 
+        mixer.music.set_volume(0.7) 
+        mixer.music.play(-1) 
+  
+
     def create_back_img(self, screen_size):
         base_path = os.path.dirname(os.path.abspath(__file__))
         asset_path = os.path.join(base_path, "assets")
