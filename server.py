@@ -1,6 +1,9 @@
+#!/usr/bin/env python 
+
 import socket
 import select
 import json
+from Game import Game
 
 constants = {
     "SERVER_PORT": 1234,
@@ -28,6 +31,7 @@ class Server:
         self.sockets = [server_socket]
         self.payloads_to_send = []
         self.payloads_id = 0
+        self.game = Game()
 
     def __del__(self):
         for client_socket in self.sockets:
@@ -74,6 +78,12 @@ class Server:
         except ValueError:
             print("Invalid data received")
 
+    def begin_game(self):
+        # player 1
+        self.game.add_player()
+        # player 2
+        self.game.add_player()
+
     def start(self):
         while True:
             try:
@@ -85,14 +95,17 @@ class Server:
             for socket_read_ready in sockets_read_ready:
                 # if socket is the server socket
                 if socket_read_ready == self.sockets[0]:
-                    client, _ = self.sockets[0].accept()
+                    client, addr = self.sockets[0].accept()
                     # add new client socket to the list
                     self.sockets.append(client)
-                    if len(self.sockets) == 2:
+                    print("New client connected", addr)
+                    # Count server socket (2 player sockets + 1 server socket)
+                    if len(self.sockets) == 3:
                         self.send_data_to_all_clients(constants["GAME_CODES"]["GAME_START"], "start")
                     continue
 
                 client_data = self.read_data_from_client(socket_read_ready)
+                print("Received", client_data.decode("utf-8"))
                 if client_data is None:
                     # Then client is disconnected
                     self.disconnect_client(socket_read_ready)
