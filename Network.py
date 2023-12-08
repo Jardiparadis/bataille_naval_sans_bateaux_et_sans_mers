@@ -3,7 +3,7 @@ import select
 from queue import Queue, Empty
 from threading import Thread
 
-SERVER_HOST = "192.168.1.223"
+SERVER_HOST = "192.168.1.163"
 SERVER_PORT = 1234
 
 
