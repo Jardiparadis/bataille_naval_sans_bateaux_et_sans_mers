@@ -2,6 +2,7 @@ from enum import Enum
 from opensimplex import OpenSimplex
 import random
 
+
 class BoxType(Enum):
     Grass = 0,
     Water = 1,
@@ -10,11 +11,11 @@ class BoxType(Enum):
 
 class MapGenerator:
 
-    def __init__(self, shape):
-
+    def __init__(self, shape, seed=None):
         scale = 9.1
 
-        seed = random.randint(0,1000)  # You can change this seed to any integer value
+        if seed is None:
+            seed = random.randint(0,1000)  # You can change this seed to any integer value
         random.seed(seed)
         noise_generator = OpenSimplex(seed)
 

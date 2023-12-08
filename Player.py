@@ -1,11 +1,15 @@
 from Soldier import Soldier
 
+
 class Player:
 
     def __init__(self):
         self.soldier_list = []
         self.start_side = ""
         self.nb_point = 60
+    
+    def add_soldier(self):
+        self.soldier_list.append(Soldier())
 
     def add_attack_to_soldier(self, soldier: Soldier):
         soldier.add_attack()
