@@ -9,6 +9,8 @@ from PIL import Image
 import sys
 from pygame import mixer
 from Soldier import Soldier
+from pathlib import Path
+
 
 class MapUI:
 
@@ -72,6 +74,11 @@ class MapUI:
         self.is_game_ended = False
 
         self.sounds = self.load_sounds()
+
+        base_path = Path(__file__).parent
+        self.player_1_soldier_img = pygame.image.load(base_path / "assets/images/Soldier1.png")
+        self.player_2_soldier_img = pygame.image.load(base_path / "assets/images/Soldier2.png")
+        self.player_2_soldier_img = pygame.transform.rotate(self.player_2_soldier_img, 180)
 
         self.generate_map()
 
@@ -217,19 +224,16 @@ class MapUI:
 
 
     def display(self, soldiers):
-        player_1_soldier_img = pygame.image.load("C:\\Users\\moisan_l\\Documents\\Python\\bataille_naval_sans_bateaux_et_sans_mers\\assets\\images\\Soldier1.png")
-        player_2_soldier_img = pygame.image.load("C:\\Users\\moisan_l\\Documents\\Python\\bataille_naval_sans_bateaux_et_sans_mers\\assets\\images\\Soldier2.png")
-        player_2_soldier_img = pygame.transform.rotate(player_2_soldier_img, 180)
         self.display_map_page()
         
         player_1_soldiers = soldiers[0]
         player_2_soldiers = soldiers[1]
         for soldier in player_1_soldiers:
-            soldier_to_display = Soldier(player_1_soldier_img, x=soldier[0], y=soldier[1])
+            soldier_to_display = Soldier(self.player_1_soldier_img, x=soldier[0], y=soldier[1])
             soldier_to_display.display(self.screen)
 
         for soldier in player_2_soldiers:
-            soldier_to_display = Soldier(player_2_soldier_img, x=soldier[0], y=soldier[1])
+            soldier_to_display = Soldier(self.player_2_soldier_img, x=soldier[0], y=soldier[1])
             soldier_to_display.display(self.screen)
 
         if self.is_game_ended:
